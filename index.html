@@ -1403,23 +1403,26 @@ function submitForm(e) {
     };
     
     // Google Sheets로 전송
-    fetch('https://script.google.com/macros/s/AKfycbzHPDuh0oPgxYPgaQem2YprqBFMLXtBTbb6V21rgyHJMlecWZ0fWR2t1feRef41uBb_/exec', {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    }).then(() => {
-      form.style.opacity = '0';
-      form.style.transition = 'opacity 0.5s';
-      setTimeout(() => {
-        form.style.display = 'none';
-        document.getElementById('successMsg').classList.add('show');
-      }, 500);
-    }).catch(err => {
-      console.error('전송 실패:', err);
-      alert('주문 전송 중 오류가 발생했습니다. 다시 시도해주세요.');
+// 1. 버튼 클릭 즉시 잠금
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerText = "ORDERING...";
+
+    // 2. 구글로 데이터 전송 (대답 기다리지 않음)
+    fetch('https://script.google.com/macros/s/AKfycbzHPDuh0oPgxYPg0Qem2YprqBFMLXtBTbb6V21rgyHJM1ecWZ0fWR2t1feRef41uBb_/exec', { 
+      method: 'POST', 
+      mode: 'no-cors', 
+      body: new FormData(form)
     });
-  }
+
+    // 3. 기존의 0.5초 효과를 살려서 즉시 화면 전환
+    form.style.opacity = '0';
+    form.style.transition = 'opacity 0.5s';
+    
+    setTimeout(() => {
+      form.style.display = 'none';
+      document.getElementById('successMsg').classList.add('show');
+    }, 500);
 }
 </script>
 
